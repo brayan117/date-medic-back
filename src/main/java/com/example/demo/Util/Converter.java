@@ -10,33 +10,57 @@ import java.util.stream.Collectors;
 
 @Component
 public class Converter {
-    public Patient converToPartient(PatientDTO patientDTO){
-        Patient patient = new Patient();
-        patient.setCc(patientDTO.cc());
-        patient.setName(patientDTO.name());
-        patient.setLastName(patientDTO.lastName());
-        patient.setGender(patientDTO.gender());
-        patient.setEmail(patientDTO.email());
-        patient.setPhone(patientDTO.phone());
-        List<Date> dates = null;
-        if (patientDTO.dates() != null) {
-            dates = patientDTO.dates().stream().map(dateDTO -> {
-                Date date = converToDate(dateDTO);
-                date.setPatient(patient);
-                return date;
-            }).collect(Collectors.toList());
-        }
-        patient.setDates(dates);
-        List<HistoricalRecord> hcs = null;
-        if (patientDTO.historicalRecords() != null) {
-            hcs = patientDTO.historicalRecords().stream().map(hcDTO -> {
-                HistoricalRecord hc = converToHC(hcDTO);
-                hc.setPatient(patient);
-                return hc;
-            }).collect(Collectors.toList());
-        }
-        patient.setHistoricalRecords(hcs);
+    // Métodos para Specialty
 
+    public Specialty convertToSpecialty(SpecialtyDTO specialtyDTO) {
+        if (specialtyDTO == null) {
+            return null;
+        }
+        
+        return Specialty.builder()
+            .name(specialtyDTO.name())
+            .build();
+    }
+
+    public Patient converToPartient(PatientDTO patientDTO) {
+        if (patientDTO == null) {
+            return null;
+        }
+        
+        Patient patient = Patient.builder()
+            .id(patientDTO.id())
+            .cc(patientDTO.cc())
+            .name(patientDTO.name())
+            .lastName(patientDTO.lastName())
+            .gender(patientDTO.gender())
+            .email(patientDTO.email())
+            .phone(patientDTO.phone())
+            .build();
+            
+        // Convertir las fechas
+        if (patientDTO.dates() != null) {
+            List<Date> dates = patientDTO.dates().stream()
+                .map(dateDTO -> {
+                    Date date = converToDate(dateDTO);
+                    date.setPatient(patient);
+                    return date;
+                })
+                .collect(Collectors.toList());
+            patient.setDates(dates);
+        }
+        
+        // Convertir los registros históricos
+        if (patientDTO.historicalRecords() != null) {
+            List<HistoricalRecord> historicalRecords = patientDTO.historicalRecords().stream()
+                .map(hrDTO -> {
+                    HistoricalRecord hr = converToHC(hrDTO);
+                    hr.setPatient(patient);
+                    return hr;
+                })
+                .collect(Collectors.toList());
+            patient.setHistoricalRecords(historicalRecords);
+        }
+        
         return patient;
     }
 
@@ -145,39 +169,39 @@ public class Converter {
         return sec;
     }
 
-    public Specialty convertToSpecialty(SpecialtyDTO specialtyDTO) {
-        Specialty specialty = new Specialty();
-        specialty.setId(specialtyDTO.id());
-        specialty.setName(specialtyDTO.name());
-        List<Doctor> doctors = null;
-        if (specialtyDTO.doctors() != null) {
-            doctors = specialtyDTO.doctors().stream().map(doctorDTO -> {
-                Doctor doctor = converToDoctor(doctorDTO);
-                doctor.setSpecialty(specialty);
-                return doctor;
-            }).collect(Collectors.toList());
-        }
-        specialty.setDoctors(doctors);
 
-        return specialty;
-    }
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public PatientDTO convertToPatientDTO(Patient patient){
-
-        List<DateDTO> dateDTOS = patient.getDates().stream().map(this::convertToDateDTO).collect(Collectors.toList());
-        List<HistoricalRecordDTO> hcDTO = patient.getHistoricalRecords().stream().map(this::convertToHCDTO).collect(Collectors.toList());
-
+    public PatientDTO convertToPatientDTO(Patient patient) {
+        if (patient == null) {
+            return null;
+        }
+        
+        List<DateDTO> dateDTOs = null;
+        if (patient.getDates() != null) {
+            dateDTOs = patient.getDates().stream()
+                .map(this::convertToDateDTO)
+                .collect(Collectors.toList());
+        }
+        
+        List<HistoricalRecordDTO> historicalRecordDTOs = null;
+        if (patient.getHistoricalRecords() != null) {
+            historicalRecordDTOs = patient.getHistoricalRecords().stream()
+                .map(this::convertToHCDTO)
+                .collect(Collectors.toList());
+        }
+        
         return new PatientDTO(
-                patient.getCc(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getGender(),
-                patient.getEmail(),
-                patient.getPhone(),
-                dateDTOS,
-                hcDTO
+            patient.getId(),
+            patient.getCc(),
+            patient.getName(),
+            patient.getLastName(),
+            patient.getGender(),
+            patient.getEmail(),
+            patient.getPhone(),
+            dateDTOs,
+            historicalRecordDTOs
         );
     }
 

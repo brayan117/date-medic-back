@@ -29,9 +29,22 @@ public class SpecialtyService {
     }
 
     public SpecialtyDTO create(SpecialtyDTO specialtyDTO) {
-        Specialty specialty = new Specialty();
-        specialty.setName(specialtyDTO.name());
+        if (specialtyDTO == null || specialtyDTO.name() == null || specialtyDTO.name().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la especialidad es requerido");
+        }
 
-        return converter.converToSpecialtyDTO(specialtyRepository.save(specialty));
+        // Verificar si ya existe una especialidad con el mismo nombre
+        if (specialtyRepository.existsByName(specialtyDTO.name())) {
+            throw new IllegalArgumentException("Ya existe una especialidad con el nombre: " + specialtyDTO.name());
+        }
+
+        // Convertir DTO a entidad
+        Specialty specialty = converter.convertToSpecialty(specialtyDTO);
+        
+        // Guardar la entidad
+        Specialty savedSpecialty = specialtyRepository.save(specialty);
+        
+        // Convertir la entidad guardada de vuelta a DTO para la respuesta
+        return converter.converToSpecialtyDTO(savedSpecialty);
     }
 }

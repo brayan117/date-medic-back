@@ -1,8 +1,6 @@
 # 📚 Documentación de la API - Sistema de Citas Médicas
 
 ## 📋 Tabla de Contenidos
-- [📌 Introducción](#-introducción)
-- [🔑 Autenticación](#-autenticación)
 - [🔗 Endpoints](#-endpoints)
   - [👥 Pacientes](#-pacientes)
   - [👨‍⚕️ Doctores](#️-doctores)

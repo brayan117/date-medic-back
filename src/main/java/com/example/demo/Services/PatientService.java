@@ -7,6 +7,7 @@ import com.example.demo.Repositories.PatientRepository;
 import com.example.demo.Util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,16 +30,41 @@ public class PatientService {
         return patients.stream().map(converter::convertToPatientDTO).collect(Collectors.toList());
     }
 
-    public PatientDTO createPatient(PatientDTO patientDTO){
-        Patient patient = new Patient();
-        patient.setCc(patientDTO.cc());
-        patient.setName(patientDTO.name());
-        patient.setLastName(patientDTO.lastName());
-        patient.setGender(patientDTO.gender());
-        patient.setEmail(patientDTO.email());
-        patient.setPhone(patientDTO.phone());
+    @Transactional
+    public PatientDTO createPatient(PatientDTO patientDTO) {
+        // Validar campos requeridos
+        if (patientDTO.name() == null || patientDTO.name().trim().isEmpty() ||
+            patientDTO.lastName() == null || patientDTO.lastName().trim().isEmpty() ||
+            patientDTO.email() == null || patientDTO.email().trim().isEmpty()) {
+            throw new RuntimeException("Los campos nombre, apellido y email son obligatorios");
+        }
 
-        return converter.convertToPatientDTO(patientRepository.save(patient));
+        // Validar que el CC sea proporcionado
+        if (patientDTO.cc() == null) {
+            throw new RuntimeException("El número de cédula es obligatorio");
+        }
+
+        // Verificar si ya existe un paciente con ese CC
+        if (patientRepository.findByCc(patientDTO.cc()).isPresent()) {
+            throw new RuntimeException("Ya existe un paciente con la cédula: " + patientDTO.cc());
+        }
+
+        // Crear y guardar el nuevo paciente
+        Patient patient = Patient.builder()
+            .cc(patientDTO.cc())
+            .name(patientDTO.name().trim())
+            .lastName(patientDTO.lastName().trim())
+            .gender(patientDTO.gender() != null ? patientDTO.gender().trim() : null)
+            .email(patientDTO.email().trim())
+            .phone(patientDTO.phone() != null ? patientDTO.phone().trim() : null)
+            .build();
+
+        try {
+            Patient savedPatient = patientRepository.save(patient);
+            return converter.convertToPatientDTO(savedPatient);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar el paciente: " + e.getMessage());
+        }
     }
 
     public void deletePatient(Long cc){
