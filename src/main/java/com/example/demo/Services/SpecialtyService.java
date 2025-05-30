@@ -28,7 +28,7 @@ public class SpecialtyService {
         return specialties.stream().map(converter::converToSpecialtyDTO).collect(Collectors.toList());
     }
 
-    private SpecialtyDTO create (SpecialtyDTO specialtyDTO) {
+    public SpecialtyDTO create(SpecialtyDTO specialtyDTO) {
         Specialty specialty = new Specialty();
         specialty.setName(specialtyDTO.name());
 

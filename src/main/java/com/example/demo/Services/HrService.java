@@ -22,7 +22,7 @@ public class HrService {
     @Autowired
     private DoctorRepository doctorRepository;
 
-    private HistoricalRecordDTO createHr(HistoricalRecordDTO hrDTO) {
+    public HistoricalRecordDTO createHr(HistoricalRecordDTO hrDTO) {
         HistoricalRecord hr = new HistoricalRecord();
         hr.setDiagnosis(hrDTO.diagnosis());
         hr.setDescription(hrDTO.description());
@@ -35,7 +35,7 @@ public class HrService {
         return converter.convertToHCDTO(hrRepository.save(hr));
     }
 
-    private HistoricalRecordDTO updateHr(Long id, HistoricalRecordDTO hrDTO){
+    public HistoricalRecordDTO updateHr(Long id, HistoricalRecordDTO hrDTO){
         HistoricalRecord hr = hrRepository.findById(id).orElseThrow(()-> new RuntimeException("Historia clinica no encontrada"));
         hr.setDiagnosis(hrDTO.diagnosis());
         hr.setDescription(hrDTO.description());

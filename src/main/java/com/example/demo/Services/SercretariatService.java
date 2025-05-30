@@ -20,7 +20,7 @@ public class SercretariatService {
     @Autowired
     private DateRepository dateRepository;
 
-    private SecretariatDTO createSecretariat(SecretariatDTO secretariatDTO){
+    public SecretariatDTO createSecretariat(SecretariatDTO secretariatDTO){
         Secretariat secretariat = new Secretariat();
         secretariat.setName(secretariatDTO.name());
         secretariat.setLastName(secretariatDTO.lastName());

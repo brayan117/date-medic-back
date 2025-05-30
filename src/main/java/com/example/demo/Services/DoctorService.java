@@ -26,17 +26,17 @@ public class DoctorService {
     @Autowired
     private Converter converter;
 
-    private List<DoctorDTO> getAllDoctors(){
+    public List<DoctorDTO> getAllDoctors(){
         List<Doctor> doctors = doctorRepository.findAll();
         return doctors.stream().map(converter::converToDoctorDTO).collect(Collectors.toList());
     }
 
-    private DoctorDTO getDoctorById(Long id){
+    public DoctorDTO getDoctorById(Long id){
         Doctor doctor = doctorRepository.findById(id).orElseThrow(()-> new RuntimeException("Doctor no encontrado"));
         return converter.converToDoctorDTO(doctor);
     }
 
-    private SpecialtyDTO getDoctorBySpecialtyById(Long id){
+    public SpecialtyDTO getDoctorBySpecialtyById(Long id){
         Doctor doctor = doctorRepository.findById(id).orElseThrow(()-> new RuntimeException("Doctor no encontrado"));
         Specialty specialty = doctor.getSpecialty();
         if (specialty != null){
@@ -45,7 +45,7 @@ public class DoctorService {
         return converter.converToSpecialtyDTO(specialty);
     }
 
-    private DoctorDTO createDoctor(DoctorDTO doctorDTO){
+    public DoctorDTO createDoctor(DoctorDTO doctorDTO){
         Doctor doctor = new Doctor();
         doctor.setCc(doctor.getCc());
         doctor.setName(doctorDTO.name());

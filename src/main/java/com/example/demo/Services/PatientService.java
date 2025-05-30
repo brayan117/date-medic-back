@@ -19,17 +19,17 @@ public class PatientService {
     @Autowired
     private Converter converter;
 
-    private PatientDTO getPatienById(Long cc){
+    public PatientDTO getPatientById(Long cc){
         Patient patient = patientRepository.findById(cc).orElseThrow(()-> new RuntimeException("Paciente no encontrado"));
         return converter.convertToPatientDTO(patient);
     }
 
-    private List<PatientDTO> getAllPatients(){
+    public List<PatientDTO> getAllPatients(){
         List<Patient> patients = patientRepository.findAll();
         return patients.stream().map(converter::convertToPatientDTO).collect(Collectors.toList());
     }
 
-    private PatientDTO createPatient(PatientDTO patientDTO){
+    public PatientDTO createPatient(PatientDTO patientDTO){
         Patient patient = new Patient();
         patient.setCc(patientDTO.cc());
         patient.setName(patientDTO.name());
@@ -41,7 +41,7 @@ public class PatientService {
         return converter.convertToPatientDTO(patientRepository.save(patient));
     }
 
-    private void deletePatient(Long cc){
+    public void deletePatient(Long cc){
         if(!patientRepository.existsById(cc)){
             throw new RuntimeException("Paciente no encontrado");
         }else {

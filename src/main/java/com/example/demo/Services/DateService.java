@@ -23,7 +23,7 @@ public class DateService {
     @Autowired
     private Converter converter;
 
-    private DateDTO createDate(DateDTO dateDTO){
+    public DateDTO createDate(DateDTO dateDTO){
         Date date = new Date();
         date.setDate(dateDTO.date());
         date.setHour(dateDTO.hour());
@@ -34,12 +34,12 @@ public class DateService {
         return converter.convertToDateDTO(dateRepository.save(date));
     }
 
-    private DateDTO getDateById(Long id){
+    public DateDTO getDateById(Long id){
         Date date = dateRepository.findById(id).orElseThrow(()-> new RuntimeException("Cita no encontrada"));
         return converter.convertToDateDTO(date);
     }
 
-    private DateDTO updateDate(Long id, DateDTO dateDTO){
+    public DateDTO updateDate(Long id, DateDTO dateDTO){
         Date date = dateRepository.findById(id).orElseThrow(()-> new RuntimeException("Cita no encontrada"));
         date.setDate(dateDTO.date());
         date.setHour(dateDTO.hour());
